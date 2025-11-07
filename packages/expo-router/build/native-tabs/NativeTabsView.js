@@ -39,11 +39,13 @@ const react_native_screens_1 = require("react-native-screens");
 const appearance_1 = require("./appearance");
 const types_1 = require("./types");
 const icon_1 = require("./utils/icon");
+const native_1 = require("@react-navigation/native");
 // We let native tabs to control the changes. This requires freeze to be disabled for tab bar.
 // Otherwise user may see glitches when switching between tabs.
 react_native_screens_1.featureFlags.experiment.controlledBottomTabs = false;
 function NativeTabsView(props) {
     const { minimizeBehavior, disableIndicator, focusedIndex, tabs } = props;
+    const colors = (0, native_1.useTheme)()?.colors;
     const deferredFocusedIndex = (0, react_1.useDeferredValue)(focusedIndex);
     // We need to check if the deferred index is not out of bounds
     // This can happen when the focused index is the last tab, and user removes that tab
@@ -51,8 +53,14 @@ function NativeTabsView(props) {
     // it will be out of bounds
     const inBoundsDeferredFocusedIndex = deferredFocusedIndex < tabs.length ? deferredFocusedIndex : focusedIndex;
     const appearances = tabs.map((tab) => ({
-        standardAppearance: (0, appearance_1.createStandardAppearanceFromOptions)(tab.options),
-        scrollEdgeAppearance: (0, appearance_1.createScrollEdgeAppearanceFromOptions)(tab.options),
+        standardAppearance: (0, appearance_1.createStandardAppearanceFromOptions)({
+            ...tab.options,
+            backgroundColor: tab.options.backgroundColor ?? colors?.card,
+        }),
+        scrollEdgeAppearance: (0, appearance_1.createScrollEdgeAppearanceFromOptions)({
+            ...tab.options,
+            backgroundColor: tab.options.backgroundColor ?? colors?.card,
+        }),
     }));
     const options = tabs.map((tab) => tab.options);
     const children = tabs.map((tab, index) => {
@@ -62,7 +70,7 @@ function NativeTabsView(props) {
     const currentTabAppearance = appearances[inBoundsDeferredFocusedIndex]?.standardAppearance;
     return (<BottomTabsWrapper 
     // #region android props
-    tabBarItemTitleFontColor={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontColor} tabBarItemTitleFontFamily={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontFamily} tabBarItemTitleFontSize={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontSize} tabBarItemTitleFontSizeActive={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontSize} tabBarItemTitleFontWeight={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontWeight} tabBarItemTitleFontStyle={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontStyle} tabBarItemIconColor={currentTabAppearance?.stacked?.normal?.tabBarItemIconColor} tabBarBackgroundColor={currentTabAppearance?.tabBarBackgroundColor} tabBarItemRippleColor={props.rippleColor} tabBarItemLabelVisibilityMode={props.labelVisibilityMode} tabBarItemIconColorActive={currentTabAppearance?.stacked?.selected?.tabBarItemIconColor ?? props?.tintColor} tabBarItemTitleFontColorActive={currentTabAppearance?.stacked?.selected?.tabBarItemTitleFontColor ?? props?.tintColor} 
+    tabBarItemTitleFontColor={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontColor} tabBarItemTitleFontFamily={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontFamily} tabBarItemTitleFontSize={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontSize} tabBarItemTitleFontSizeActive={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontSize} tabBarItemTitleFontWeight={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontWeight} tabBarItemTitleFontStyle={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontStyle} tabBarItemIconColor={currentTabAppearance?.stacked?.normal?.tabBarItemIconColor} tabBarBackgroundColor={currentTabAppearance?.tabBarBackgroundColor ?? colors?.card} tabBarItemRippleColor={props.rippleColor} tabBarItemLabelVisibilityMode={props.labelVisibilityMode} tabBarItemIconColorActive={currentTabAppearance?.stacked?.selected?.tabBarItemIconColor ?? props?.tintColor} tabBarItemTitleFontColorActive={currentTabAppearance?.stacked?.selected?.tabBarItemTitleFontColor ?? props?.tintColor} 
     // tabBarItemTitleFontSizeActive={activeStyle?.fontSize}
     tabBarItemActiveIndicatorColor={options[inBoundsDeferredFocusedIndex]?.indicatorColor} tabBarItemActiveIndicatorEnabled={!disableIndicator} 
     // #endregion
